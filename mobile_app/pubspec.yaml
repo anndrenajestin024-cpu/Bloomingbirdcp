@@ -1,0 +1,52 @@
+name: bloomingbird_app
+description: "Bloomingbird Real Estate — Property. Strategy. Legacy."
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.5.4
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.8
+  url_launcher: ^6.3.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/images/
+
+  fonts:
+    - family: EBGaramond
+      fonts:
+        - asset: assets/fonts/EBGaramond-500.ttf
+          weight: 500
+        - asset: assets/fonts/EBGaramond-600.ttf
+          weight: 600
+        - asset: assets/fonts/EBGaramond-700.ttf
+          weight: 700
+        - asset: assets/fonts/EBGaramond-500Italic.ttf
+          weight: 500
+          style: italic
+        - asset: assets/fonts/EBGaramond-600Italic.ttf
+          weight: 600
+          style: italic
+    - family: JosefinSans
+      fonts:
+        - asset: assets/fonts/JosefinSans-300.ttf
+          weight: 300
+        - asset: assets/fonts/JosefinSans-400.ttf
+          weight: 400
+        - asset: assets/fonts/JosefinSans-500.ttf
+          weight: 500
+        - asset: assets/fonts/JosefinSans-600.ttf
+          weight: 600
+        - asset: assets/fonts/JosefinSans-700.ttf
+          weight: 700
