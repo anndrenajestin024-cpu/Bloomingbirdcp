@@ -1,0 +1,1074 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bloomingbird Ops | Data Automation &amp; Entry</title>
+<meta name="description" content="Bloomingbird Real Estate operations tool — turn messy notes, emails, spreadsheets and project updates into clean, structured, reviewable records. Runs entirely in your browser.">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Josefin+Sans:wght@200;300;400;500;600;700&display=swap">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --copper:#C9956C; --copper-2:#D4A574; --copper-3:#E8C4A0; --copper-deep:#8B5A2B;
+  --cream:#F5F0EB; --page:#F9F6F2; --surface:#FCFCFB; --card:#FFFFFF;
+  --ink:#241E1A; --ink-2:#52514E; --ink-3:#898781;
+  --grid:#E1E0D9; --baseline:#C3C2B7; --hairline:rgba(11,11,11,.10);
+  /* validated data-series palette (light) */
+  --s1:#2a78d6; --s2:#1baf7a; --s3:#eda100; --s4:#008300;
+  --s5:#4a3aa7; --s6:#e34948; --s7:#e87ba4; --s8:#eb6834;
+  --good:#0ca30c; --good-text:#006300; --warn:#fab219; --serious:#ec835a; --critical:#d03b3b;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --cream:#F5F0EB; --page:#141110; --surface:#1a1a19; --card:#201d1b;
+    --ink:#F5F0EB; --ink-2:#C3C2B7; --ink-3:#898781;
+    --grid:#2c2c2a; --baseline:#383835; --hairline:rgba(255,255,255,.10);
+    --s1:#3987e5; --s2:#199e70; --s3:#c98500; --s4:#008300;
+    --s5:#9085e9; --s6:#e66767; --s7:#d55181; --s8:#d95926;
+    --good-text:#0ca30c;
+  }
+}
+html{scroll-behavior:smooth}
+body{background:var(--page);color:var(--ink);font-family:"Josefin Sans",system-ui,-apple-system,"Segoe UI",sans-serif;font-weight:300;line-height:1.55;min-height:100vh}
+h1,h2,h3,.serif{font-family:"EB Garamond",Georgia,serif;font-weight:500}
+.wrap{max-width:1180px;margin:0 auto;padding:0 20px}
+
+/* header */
+header{border-bottom:1px solid var(--hairline);background:var(--card)}
+.hd{display:flex;align-items:baseline;gap:16px;flex-wrap:wrap;padding:22px 0 18px}
+.brand{font-family:"EB Garamond",serif;font-size:26px;letter-spacing:.14em;text-transform:uppercase}
+.brand b{color:var(--copper);font-weight:600}
+.hd .sub{color:var(--ink-2);font-size:14px;letter-spacing:.06em;text-transform:uppercase}
+.privacy-pill{margin-left:auto;font-size:12px;color:var(--ink-2);border:1px solid var(--hairline);border-radius:999px;padding:6px 12px;display:flex;gap:6px;align-items:center}
+.privacy-pill .dot{width:8px;height:8px;border-radius:50%;background:var(--good)}
+
+/* cards & layout */
+main{padding:28px 0 60px}
+.card{background:var(--card);border:1px solid var(--hairline);border-radius:12px;padding:22px;margin-bottom:22px}
+.card h2{font-size:22px;margin-bottom:4px}
+.card .hint{color:var(--ink-2);font-size:14px;margin-bottom:14px}
+.grid2{display:grid;grid-template-columns:1.4fr 1fr;gap:22px}
+@media(max-width:860px){.grid2{grid-template-columns:1fr}}
+
+label{display:block;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);margin:12px 0 6px}
+textarea,input[type=text],select{width:100%;background:var(--surface);color:var(--ink);border:1px solid var(--baseline);border-radius:8px;padding:10px 12px;font:inherit;font-size:15px}
+textarea{min-height:190px;resize:vertical;line-height:1.5}
+textarea:focus,input:focus,select:focus{outline:2px solid var(--copper);outline-offset:1px}
+
+.drop{border:1.5px dashed var(--baseline);border-radius:10px;padding:22px;text-align:center;color:var(--ink-2);cursor:pointer;transition:border-color .15s, background .15s}
+.drop.on{border-color:var(--copper);background:rgba(201,149,108,.07)}
+.drop input{display:none}
+.filechips{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.chip{display:inline-flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--hairline);border-radius:999px;padding:5px 12px;font-size:13px}
+.chip button{border:0;background:none;color:var(--ink-3);cursor:pointer;font-size:15px;line-height:1}
+.chip button:hover{color:var(--critical)}
+
+.btnrow{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px;align-items:center}
+button.btn{font-family:"Josefin Sans",sans-serif;font-weight:500;letter-spacing:.06em;text-transform:uppercase;font-size:13px;border-radius:8px;padding:11px 20px;cursor:pointer;border:1px solid transparent;transition:filter .15s}
+.btn-primary{background:var(--copper);color:#241E1A;border-color:var(--copper)}
+.btn-primary:hover{filter:brightness(1.06)}
+.btn-ghost{background:transparent;color:var(--ink);border-color:var(--baseline)}
+.btn-ghost:hover{border-color:var(--copper);color:var(--copper)}
+.btn-quiet{background:transparent;border:0;color:var(--ink-2);text-decoration:underline;text-underline-offset:3px;cursor:pointer;font-size:13px}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+
+.notice{border-left:3px solid var(--copper);background:rgba(201,149,108,.08);padding:10px 14px;border-radius:0 8px 8px 0;font-size:14px;margin-top:14px;color:var(--ink-2)}
+.notice.warn{border-color:var(--critical);background:rgba(208,59,59,.07)}
+
+/* tabs */
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--hairline);margin-bottom:20px;flex-wrap:wrap}
+.tab{border:0;background:none;font:inherit;font-size:14px;letter-spacing:.05em;padding:10px 16px;color:var(--ink-2);cursor:pointer;border-bottom:2px solid transparent;text-transform:uppercase;font-weight:400}
+.tab[aria-selected=true]{color:var(--copper-deep);border-bottom-color:var(--copper);font-weight:600}
+@media (prefers-color-scheme: dark){.tab[aria-selected=true]{color:var(--copper-2)}}
+.panel{display:none}
+.panel.on{display:block}
+.tabbadge{display:inline-block;min-width:18px;text-align:center;background:var(--copper);color:#241E1A;border-radius:999px;font-size:11px;padding:1px 6px;margin-left:6px}
+
+/* records table */
+table{width:100%;border-collapse:collapse;font-size:14px}
+th{font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3);text-align:left;padding:8px 10px;border-bottom:1px solid var(--baseline);font-weight:500}
+td{padding:9px 10px;border-bottom:1px solid var(--grid);vertical-align:top}
+tr:hover td{background:rgba(201,149,108,.05)}
+td .quote{display:block;color:var(--ink-3);font-size:12px;margin-top:3px;font-style:italic;max-width:420px}
+.num{font-variant-numeric:tabular-nums}
+.tblwrap{overflow-x:auto}
+
+.cat{display:inline-flex;align-items:center;gap:6px;font-size:12px;letter-spacing:.03em}
+.cat .sw{width:9px;height:9px;border-radius:2px;flex:none}
+.conf{font-size:11px;border-radius:999px;padding:2px 9px;letter-spacing:.05em;text-transform:uppercase;white-space:nowrap}
+.conf.high{background:rgba(12,163,12,.13);color:var(--good-text)}
+.conf.medium{background:rgba(250,178,25,.16);color:#7a5200}
+.conf.low{background:rgba(208,59,59,.12);color:var(--critical)}
+@media (prefers-color-scheme: dark){.conf.medium{color:var(--warn)}}
+.basis{font-size:11px;color:var(--ink-3)}
+.status{font-size:11px;letter-spacing:.06em;text-transform:uppercase;white-space:nowrap}
+.status.approved{color:var(--good-text)}
+.status.rejected{color:var(--critical);text-decoration:line-through}
+.status.review{color:#7a5200}
+@media (prefers-color-scheme: dark){.status.review{color:var(--warn)}}
+.rowbtns{display:flex;gap:6px;white-space:nowrap}
+.rowbtns button{border:1px solid var(--hairline);background:var(--surface);border-radius:6px;padding:3px 9px;font-size:12px;cursor:pointer;color:var(--ink-2)}
+.rowbtns button:hover{border-color:var(--copper);color:var(--copper-deep)}
+@media (prefers-color-scheme: dark){.rowbtns button:hover{color:var(--copper-2)}}
+
+.toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:14px}
+.toolbar select{width:auto}
+.toolbar .spacer{flex:1}
+.switch{display:inline-flex;align-items:center;gap:8px;font-size:13px;color:var(--ink-2);cursor:pointer;user-select:none}
+.switch input{accent-color:var(--copper);width:15px;height:15px}
+
+/* infographics */
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px;margin-bottom:20px}
+.tile{background:var(--surface);border:1px solid var(--hairline);border-radius:10px;padding:16px 18px}
+.tile .t-label{font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3)}
+.tile .t-value{font-size:30px;font-weight:400;margin-top:4px;color:var(--ink)}
+.tile .t-sub{font-size:12px;color:var(--ink-2);margin-top:2px}
+.charts{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+@media(max-width:860px){.charts{grid-template-columns:1fr}}
+.chartcard{background:var(--surface);border:1px solid var(--hairline);border-radius:10px;padding:18px}
+.chartcard h3{font-size:18px;margin-bottom:2px}
+.chartcard .csub{font-size:12px;color:var(--ink-3);margin-bottom:12px}
+.chartcard.wide{grid-column:1/-1}
+.legend{display:flex;flex-wrap:wrap;gap:12px;margin-top:10px;font-size:12px;color:var(--ink-2)}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend .sw{width:9px;height:9px;border-radius:2px}
+.placeholder{color:var(--ink-3);font-size:13px;border:1.5px dashed var(--grid);border-radius:8px;padding:18px;text-align:center}
+details.dtable{margin-top:10px;font-size:13px}
+details.dtable summary{cursor:pointer;color:var(--ink-3);font-size:12px;letter-spacing:.05em;text-transform:uppercase}
+details.dtable table{margin-top:8px}
+svg text{font-family:"Josefin Sans",sans-serif}
+
+#tooltip{position:fixed;pointer-events:none;background:var(--ink);color:var(--page);font-size:12px;padding:6px 10px;border-radius:6px;opacity:0;transition:opacity .1s;z-index:50;max-width:260px}
+
+/* executive */
+.exec p{max-width:70ch;margin-bottom:12px;font-size:16px}
+.exec .lede{font-family:"EB Garamond",serif;font-size:21px;line-height:1.5}
+.exec ul{margin:0 0 12px 20px}
+.exec li{margin-bottom:6px;font-size:15px}
+
+/* audit */
+.audit h3{font-size:18px;margin:18px 0 8px}
+.flaglist li{margin:0 0 8px 20px;font-size:14px}
+.flaglist .why{color:var(--ink-3);font-size:12px}
+.log{font-size:13px}
+.log td:first-child{white-space:nowrap;color:var(--ink-3);font-variant-numeric:tabular-nums}
+
+dialog{border:1px solid var(--hairline);border-radius:12px;background:var(--card);color:var(--ink);padding:24px;max-width:520px;width:92vw}
+dialog::backdrop{background:rgba(20,15,10,.45)}
+dialog h3{margin-bottom:12px}
+dialog .btnrow{justify-content:flex-end}
+
+footer{border-top:1px solid var(--hairline);padding:22px 0 34px;color:var(--ink-3);font-size:13px}
+.masked{letter-spacing:.12em}
+.sens-tag{font-size:10px;color:var(--copper-deep);border:1px solid var(--copper);border-radius:4px;padding:0 4px;margin-left:6px;vertical-align:middle;letter-spacing:.05em}
+@media (prefers-color-scheme: dark){.sens-tag{color:var(--copper-2)}}
+.empty{color:var(--ink-3);text-align:center;padding:40px 0;font-size:15px}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap hd">
+    <div class="brand">Blooming<b>bird</b></div>
+    <div class="sub">Operations · Data Automation &amp; Entry</div>
+    <div class="privacy-pill" title="No data leaves this device. There is no server, no account and no API."><span class="dot"></span> 100% on-device — nothing is uploaded</div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- INPUT -->
+  <section class="card">
+    <h2>1 · Bring in raw data</h2>
+    <p class="hint">Paste notes, emails, WhatsApp messages or project updates — or drop in CSV / text files. The tool extracts, classifies and validates every item, and never invents information: anything unclear is flagged for your review instead of guessed.</p>
+    <div class="grid2">
+      <div>
+        <label for="rawtext">Paste text (notes · emails · updates)</label>
+        <textarea id="rawtext" placeholder="e.g.&#10;Client Sarah confirmed EOI for unit 1204, booking fee AED 50,000 paid.&#10;SPA signing scheduled 24 July 2026 — assigned to Omar.&#10;Risk: DLD registration pending…"></textarea>
+      </div>
+      <div>
+        <label>Files (.csv · .tsv · .txt · .md · .eml · .json)</label>
+        <div class="drop" id="drop" role="button" tabindex="0" aria-label="Add files">
+          <input type="file" id="fileinput" multiple accept=".csv,.tsv,.txt,.md,.eml,.json,.log">
+          Drop files here or <u>browse</u><br>
+          <small>PDF / Excel? Export as CSV or paste the text — files are read locally, never uploaded.</small>
+        </div>
+        <div class="filechips" id="filechips"></div>
+        <label for="project">Project / context (optional)</label>
+        <input type="text" id="project" placeholder="e.g. Marina Vista Tower 2">
+      </div>
+    </div>
+    <div class="btnrow">
+      <button class="btn btn-primary" id="processBtn">Process data</button>
+      <button class="btn btn-ghost" id="sampleBtn">Load sample data</button>
+      <button class="btn-quiet" id="clearBtn">Clear everything</button>
+      <span id="procNote" style="font-size:13px;color:var(--ink-2)"></span>
+    </div>
+    <div class="notice" id="statusNote" hidden></div>
+  </section>
+
+  <!-- RESULTS -->
+  <section class="card" id="results" hidden>
+    <h2>2 · Review, visualise, export</h2>
+    <p class="hint">Every record traces back to its exact source line. Approve, edit or reject before exporting — nothing is final until you say so.</p>
+
+    <div class="tabs" role="tablist">
+      <button class="tab" role="tab" aria-selected="true" data-panel="p-records">Records <span class="tabbadge" id="recCount">0</span></button>
+      <button class="tab" role="tab" aria-selected="false" data-panel="p-charts">Infographics</button>
+      <button class="tab" role="tab" aria-selected="false" data-panel="p-exec">Executive summary</button>
+      <button class="tab" role="tab" aria-selected="false" data-panel="p-audit">Audit &amp; exceptions <span class="tabbadge" id="flagCount" style="background:var(--critical);color:#fff">0</span></button>
+    </div>
+
+    <!-- RECORDS -->
+    <div class="panel on" id="p-records" role="tabpanel">
+      <div class="toolbar">
+        <select id="catFilter" aria-label="Filter by category"><option value="">All categories</option></select>
+        <select id="confFilter" aria-label="Filter by confidence">
+          <option value="">All confidence</option><option value="high">High</option><option value="medium">Medium</option><option value="low">Low</option>
+        </select>
+        <label class="switch"><input type="checkbox" id="revealSens"> Reveal sensitive details</label>
+        <span class="spacer"></span>
+        <button class="btn btn-ghost" id="approveHigh">Approve all high-confidence</button>
+      </div>
+      <div class="tblwrap">
+      <table id="recTable">
+        <thead><tr>
+          <th>Category</th><th>Item</th><th>Value</th><th class="num">Amount</th><th>Date</th><th>Owner</th><th>Confidence</th><th>Status</th><th></th>
+        </tr></thead>
+        <tbody></tbody>
+      </table>
+      </div>
+      <div class="btnrow">
+        <button class="btn btn-primary" id="exportCsv">Export CSV</button>
+        <button class="btn btn-ghost" id="exportJson">Export JSON</button>
+        <label class="switch"><input type="checkbox" id="exportApprovedOnly" checked> Approved records only</label>
+      </div>
+    </div>
+
+    <!-- INFOGRAPHICS -->
+    <div class="panel" id="p-charts" role="tabpanel">
+      <div class="tiles" id="tiles"></div>
+      <div class="charts" id="chartGrid"></div>
+    </div>
+
+    <!-- EXECUTIVE -->
+    <div class="panel" id="p-exec" role="tabpanel">
+      <div class="exec" id="execBody"></div>
+      <div class="btnrow"><button class="btn btn-ghost" id="copyExec">Copy summary</button></div>
+    </div>
+
+    <!-- AUDIT -->
+    <div class="panel" id="p-audit" role="tabpanel">
+      <div class="audit" id="auditBody"></div>
+      <h3 class="serif" style="font-size:18px;margin:22px 0 8px">Activity log</h3>
+      <div class="tblwrap"><table class="log" id="logTable"><thead><tr><th>Time</th><th>Event</th><th>Detail</th></tr></thead><tbody></tbody></table></div>
+      <div class="btnrow"><button class="btn btn-ghost" id="exportLog">Export audit log</button></div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <strong>Privacy by design.</strong> This tool runs entirely in your browser — data is processed on your device, is never uploaded, and is discarded when you close the page. Sensitive details (phone numbers, emails, amounts on contact records) are masked in previews until you choose to reveal them. Exports happen only when you click export and confirm.<br>
+    <span style="opacity:.7">Bloomingbird Real Estate · Operations Intelligence</span>
+  </div>
+</footer>
+
+<div id="tooltip" role="status"></div>
+
+<dialog id="editDlg">
+  <h3 class="serif">Edit record</h3>
+  <form method="dialog" id="editForm">
+    <label>Item</label><input type="text" id="e_field">
+    <label>Value</label><input type="text" id="e_value">
+    <label>Category</label><select id="e_cat"></select>
+    <label>Amount (AED, numbers only — leave blank if none)</label><input type="text" id="e_amount" inputmode="decimal">
+    <label>Date (YYYY-MM-DD, blank if none)</label><input type="text" id="e_date">
+    <label>Owner</label><input type="text" id="e_owner">
+    <div class="btnrow">
+      <button class="btn btn-ghost" value="cancel">Cancel</button>
+      <button class="btn btn-primary" value="save" id="editSave">Save changes</button>
+    </div>
+  </form>
+</dialog>
+
+<script>
+"use strict";
+/* ============================================================
+   Bloomingbird Ops — on-device data automation & entry engine
+   No network calls. No storage unless the user exports a file.
+   ============================================================ */
+
+const $ = (s, el=document) => el.querySelector(s);
+const $$ = (s, el=document) => [...el.querySelectorAll(s)];
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+
+const CATS = {
+  cost:        {label:"Cost / Payment",  slot:1},
+  milestone:   {label:"Milestone",       slot:2},
+  action_item: {label:"Action item",     slot:3},
+  risk:        {label:"Risk / Issue",    slot:6},
+  approval:    {label:"Approval",        slot:4},
+  compliance:  {label:"Compliance",      slot:5},
+  dependency:  {label:"Dependency",      slot:8},
+  contact:     {label:"Client / Contact",slot:7},
+  general:     {label:"General note",    slot:0}
+};
+const SLOT_VARS = ["--ink-3","--s1","--s2","--s3","--s4","--s5","--s6","--s7","--s8"];
+const slotColor = slot => getComputedStyle(document.documentElement).getPropertyValue(SLOT_VARS[slot] || "--ink-3").trim();
+
+const state = {
+  files: [],          // {name, text}
+  records: [],        // extracted records
+  meta: null,         // validation results, summary facts
+  log: []
+};
+
+function logEvent(event, detail){
+  state.log.push({t:new Date(), event, detail});
+  renderLog();
+}
+
+/* ---------------- date parsing (day-first, UAE style) ---------------- */
+const MONTHS = {jan:1,feb:2,mar:3,apr:4,may:5,jun:6,jul:7,aug:8,sep:9,sept:9,oct:10,nov:11,dec:12,
+  january:1,february:2,march:3,april:4,june:6,july:7,august:8,september:9,october:10,november:11,december:12};
+
+function pad(n){return String(n).padStart(2,"0")}
+function validDMY(d,m,y){ if(m<1||m>12||d<1||d>31) return false; const dt=new Date(y,m-1,d); return dt.getFullYear()===y&&dt.getMonth()===m-1&&dt.getDate()===d; }
+
+function parseDate(text){
+  let m;
+  // ISO 2026-07-12
+  if((m = text.match(/\b(20\d{2})-(\d{1,2})-(\d{1,2})\b/))){
+    const y=+m[1],mo=+m[2],d=+m[3];
+    if(validDMY(d,mo,y)) return {iso:`${y}-${pad(mo)}-${pad(d)}`, display:m[0], conf:"high", quote:m[0]};
+  }
+  // 24/07/2026 or 24-07-26 (day first)
+  if((m = text.match(/\b(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{2,4})\b/))){
+    let d=+m[1],mo=+m[2],y=+m[3]; if(y<100) y+=2000;
+    const ambiguous = d<=12 && mo<=12 && d!==mo;
+    if(validDMY(d,mo,y)) return {iso:`${y}-${pad(mo)}-${pad(d)}`, display:m[0], conf: ambiguous?"medium":"high", quote:m[0],
+      note: ambiguous? "Day/month order assumed day-first ("+m[0]+")" : null};
+  }
+  // 24 July 2026 / 24 Jul / July 24, 2026
+  if((m = text.match(/\b(\d{1,2})(?:st|nd|rd|th)?\s+([A-Za-z]{3,9})\.?,?\s*(20\d{2})?\b/))){
+    const mo = MONTHS[m[2].toLowerCase()];
+    if(mo){
+      const d=+m[1], y = m[3]? +m[3] : null;
+      if(d>=1&&d<=31) return y && validDMY(d,mo,y)
+        ? {iso:`${y}-${pad(mo)}-${pad(d)}`, display:m[0], conf:"high", quote:m[0]}
+        : {iso:null, display:m[0], conf:"low", quote:m[0], note:"Year not stated for date “"+m[0]+"”"};
+    }
+  }
+  if((m = text.match(/\b([A-Za-z]{3,9})\.?\s+(\d{1,2})(?:st|nd|rd|th)?,?\s*(20\d{2})?\b/))){
+    const mo = MONTHS[m[1].toLowerCase()];
+    if(mo){
+      const d=+m[2], y=m[3]? +m[3] : null;
+      if(d>=1&&d<=31) return y && validDMY(d,mo,y)
+        ? {iso:`${y}-${pad(mo)}-${pad(d)}`, display:m[0], conf:"high", quote:m[0]}
+        : {iso:null, display:m[0], conf:"low", quote:m[0], note:"Year not stated for date “"+m[0]+"”"};
+    }
+  }
+  // Q4 2027
+  if((m = text.match(/\bQ([1-4])\s*(20\d{2})\b/i))){
+    const q=+m[1], y=+m[2], mo=q*3; // end of quarter, marker only
+    return {iso:`${y}-${pad(mo)}-01`, display:m[0], conf:"medium", quote:m[0], note:"“"+m[0]+"” mapped to start of final month of the quarter for sorting only"};
+  }
+  return null;
+}
+
+/* ---------------- money parsing ---------------- */
+function parseMoney(text){
+  const rx = /(AED|USD|EUR|GBP|Dhs?\.?|د\.إ|\$|€|£)\s*([\d][\d,]*(?:\.\d+)?)\s*(k|K|m|M|mn|million)?|\b([\d][\d,]*(?:\.\d+)?)\s*(k|K|m|M|mn|million)?\s*(AED|USD|dirhams?|dollars?)\b/;
+  const m = text.match(rx);
+  if(!m) return null;
+  const curRaw = (m[1]||m[6]||"").toLowerCase();
+  let cur = "AED";
+  if(/usd|\$|dollar/.test(curRaw)) cur="USD";
+  else if(/€|eur/.test(curRaw)) cur="EUR";
+  else if(/£|gbp/.test(curRaw)) cur="GBP";
+  let num = parseFloat((m[2]||m[4]).replace(/,/g,""));
+  const suf = (m[3]||m[5]||"").toLowerCase();
+  if(suf==="k") num*=1e3;
+  if(suf==="m"||suf==="mn"||suf==="million") num*=1e6;
+  if(!isFinite(num)) return null;
+  return {amount:num, currency:cur, quote:m[0].trim()};
+}
+const fmtMoney = (n,cur="AED") => (cur==="AED"?"AED ":cur==="USD"?"$":cur==="EUR"?"€":"£") + n.toLocaleString("en-AE",{maximumFractionDigits:0});
+
+/* ---------------- classification lexicon ---------------- */
+const LEX = [
+  {cat:"risk",        rx:/\b(risk|delay(ed|s)?\b|blocked|blocker|issues?\b|concern|dispute|problem|overdue|at risk|stuck|escalat)/i},
+  {cat:"approval",    rx:/\b(approved?|approval|sign[- ]?off|signed off|authoriz|noc\b|permit|green[- ]?light|consent)/i},
+  {cat:"compliance",  rx:/\b(complian|kyc|aml|escrow|rera|dld|title deed|spa\b|mou\b|contract|oqood|ejari|trakheesi|regulat|legal)/i},
+  {cat:"milestone",   rx:/\b(handover|completion|launch|milestone|deadline|due (on|by)|go[- ]?live|delivery date|snagging|key handover|closing)/i},
+  {cat:"cost",        rx:/\b(price|cost|budget|invoice|payment|paid|fee|deposit|commission|eoi\b|booking|instal?lment|down ?payment|refund|payout|payment plan)/i},
+  {cat:"dependency",  rx:/\b(waiting (on|for)|pending|depends on|blocked by|once |after (the )?|subject to|awaiting|conditional on)/i},
+  {cat:"action_item", rx:/\b(follow ?up|call|send|schedule|arrange|book|to[- ]?do|todo|must |need(s)? to|remind|prepare|share|chase|confirm|viewing|meet(ing)?|visit)/i},
+  {cat:"contact",     rx:/\b(client|buyer|seller|investor|lead|tenant|landlord|owner|prospect)\b/i}
+];
+
+const OWNER_RX = [
+  /\bassigned to ([A-Z][a-zA-Z]+(?: [A-Z][a-zA-Z]+)?)/,
+  /\b(?:with|by|owner:?|responsible:?)\s+([A-Z][a-zA-Z]+(?: [A-Z][a-zA-Z]+)?)\b/,
+  /\b([A-Z][a-zA-Z]+) (?:to|will) (?:handle|follow|call|send|prepare|arrange|chase|issue|confirm)\b/,
+  /@([A-Za-z][\w.]+)/
+];
+const NAME_RX = /\b(?:client|buyer|seller|investor|lead|tenant|landlord|prospect)\s+((?:[A-Z][a-zA-Z'’-]+\s?){1,3})/;
+const EMAIL_RX = /[\w.+-]+@[\w-]+\.[\w.]{2,}/;
+const PHONE_RX = /(?:\+|00)\d[\d\s\-()]{7,16}\d/;
+const UNIT_RX = /\b(?:unit|villa|apartment|apt|plot|office|shop|penthouse|townhouse)\s*#?\s*([A-Z]?\d{1,5}[A-Z]?)\b/i;
+
+/* lines that look like attempts to instruct an automated system — quarantined, never processed silently */
+const SUSPICIOUS_RX = /(ignore (all|any|previous|above)|disregard (the|previous|all)|system prompt|you are now|act as |<script|javascript:|base64,|jailbreak|override (the )?(rules|instructions))/i;
+
+/* ---------------- extraction from free text ---------------- */
+let idSeq = 0;
+const newId = () => "R" + String(++idSeq).padStart(3,"0");
+
+function classify(line){
+  const hits = LEX.filter(l => l.rx.test(line)).map(l => l.cat);
+  return hits;
+}
+
+function extractLine(line, source){
+  const clean = line.trim();
+  if(!clean || clean.length < 3) return [];
+  if(SUSPICIOUS_RX.test(clean)){
+    return [{ suspicious:true, quote:clean, source }];
+  }
+  const recs = [];
+  const hits = classify(clean);
+  const money = parseMoney(clean);
+  const date = parseDate(clean);
+  const email = clean.match(EMAIL_RX);
+  const phone = clean.match(PHONE_RX);
+  const unit  = clean.match(UNIT_RX);
+  const nameM = clean.match(NAME_RX);
+  let owner = null, ownerQuote = null;
+  for(const rx of OWNER_RX){ const m = clean.match(rx); if(m){ owner = m[1].trim(); ownerQuote = m[0]; break; } }
+
+  // choose primary category: most specific hit wins by lexicon order,
+  // except a stated amount + cost keyword makes "cost" the most specific home
+  let primary = hits[0] || null;
+  if(money && hits.includes("cost")) primary = "cost";
+  if(!primary && money) primary = "cost";
+  if(!primary && date)  primary = "general";
+  if(!primary && (email||phone||nameM)) primary = "contact";
+  if(!primary) primary = "general";
+  const tags = hits.filter(h => h !== primary);
+
+  // confidence: entity + keyword = high; keyword or entity alone = medium; bare note = low
+  const entityCount = [money,date,email,phone,unit,nameM].filter(Boolean).length;
+  let conf = "low";
+  if(hits.length && entityCount) conf = "high";
+  else if(hits.length || entityCount) conf = "medium";
+  const basis = (hits.length && hits[0]===primary) || money || date ? "stated" : "inferred";
+
+  // field label: derived from strongest signal
+  let field = CATS[primary].label;
+  if(unit) field += " · " + unit[0].trim();
+  const sensitive = !!(email || phone || (primary==="contact" && money));
+
+  recs.push({
+    id: newId(), category: primary, field,
+    value: clean.length > 160 ? clean.slice(0,157)+"…" : clean,
+    amount: money ? money.amount : null,
+    currency: money ? money.currency : null,
+    date: date ? date.iso : null,
+    dateDisplay: date ? date.display : null,
+    dateNote: date && date.note ? date.note : null,
+    owner, client: nameM ? nameM[1].trim() : null,
+    email: email ? email[0] : null, phone: phone ? phone[0].trim() : null,
+    confidence: conf, basis, tags, sensitive,
+    quote: clean, source, status: conf==="low" ? "review" : "pending"
+  });
+  return recs;
+}
+
+function extractText(text, source){
+  const out = {records:[], suspicious:[]};
+  // split on newlines and sentence-ish boundaries for long paragraphs
+  const lines = text.split(/\n+/).flatMap(l => l.length > 220 ? l.split(/(?<=[.!?])\s+(?=[A-Z])/) : [l]);
+  for(const line of lines){
+    for(const r of extractLine(line, source)){
+      if(r.suspicious) out.suspicious.push(r); else out.records.push(r);
+    }
+  }
+  return out;
+}
+
+/* ---------------- CSV / TSV ---------------- */
+function parseCSV(text, delim){
+  const rows = []; let row = [], cell = "", q = false;
+  for(let i=0;i<text.length;i++){
+    const c = text[i];
+    if(q){
+      if(c === '"'){ if(text[i+1] === '"'){cell+='"';i++;} else q=false; }
+      else cell += c;
+    } else if(c === '"') q = true;
+    else if(c === delim){ row.push(cell); cell=""; }
+    else if(c === "\n"){ row.push(cell); rows.push(row); row=[]; cell=""; }
+    else if(c !== "\r") cell += c;
+  }
+  if(cell !== "" || row.length){ row.push(cell); rows.push(row); }
+  return rows.filter(r => r.some(c => c.trim() !== ""));
+}
+
+const HEADER_MAP = [
+  {key:"date",   rx:/^(date|due|deadline|scheduled|viewing date|handover)/i},
+  {key:"amount", rx:/^(amount|price|cost|value|fee|budget|payment|commission|aed|total)/i},
+  {key:"owner",  rx:/^(owner|agent|assigned|responsible|rep)/i},
+  {key:"client", rx:/^(client|buyer|customer|lead|investor|name)/i},
+  {key:"field",  rx:/^(item|task|description|note|subject|title|property|unit|project)/i},
+  {key:"status", rx:/^(status|stage|state)/i},
+  {key:"category",rx:/^(category|type|kind)/i}
+];
+
+function extractCSV(text, source){
+  const delim = (text.split("\n")[0].match(/\t/g)||[]).length > 0 ? "\t" : ",";
+  const rows = parseCSV(text, delim);
+  const out = {records:[], suspicious:[]};
+  if(!rows.length) return out;
+  const header = rows[0].map(h => h.trim());
+  const looksHeader = header.some(h => HEADER_MAP.some(hm => hm.rx.test(h)));
+  const map = {};
+  if(looksHeader){
+    header.forEach((h,i) => { const hm = HEADER_MAP.find(x => x.rx.test(h)); if(hm && !(hm.key in map)) map[hm.key]=i; });
+  }
+  const body = looksHeader ? rows.slice(1) : rows;
+  for(const r of body){
+    const joined = r.join(" · ");
+    if(SUSPICIOUS_RX.test(joined)){ out.suspicious.push({quote:joined, source}); continue; }
+    if(looksHeader && Object.keys(map).length >= 2){
+      const get = k => map[k] !== undefined ? (r[map[k]]||"").trim() : "";
+      const money = parseMoney(get("amount")) || parseMoney(joined);
+      const date  = parseDate(get("date")) || parseDate(joined);
+      let cat = null;
+      const catCell = get("category").toLowerCase();
+      if(catCell) cat = Object.keys(CATS).find(k => catCell.includes(k.replace("_"," ")) || CATS[k].label.toLowerCase().includes(catCell));
+      if(!cat){ const hits = classify(joined); cat = hits[0] || (money ? "cost" : "general"); }
+      const field = get("field") || CATS[cat].label;
+      const email = joined.match(EMAIL_RX), phone = joined.match(PHONE_RX);
+      out.records.push({
+        id:newId(), category:cat, field,
+        value: joined.length>160 ? joined.slice(0,157)+"…" : joined,
+        amount: money?money.amount:null, currency: money?money.currency:null,
+        date: date?date.iso:null, dateDisplay: date?date.display:null, dateNote: date&&date.note?date.note:null,
+        owner: get("owner")||null, client: get("client")||null,
+        email: email?email[0]:null, phone: phone?phone[0].trim():null,
+        confidence: "high", basis:"stated",
+        tags: get("status") ? ["status: "+get("status")] : [],
+        sensitive: !!(email||phone),
+        quote: joined, source, status:"pending"
+      });
+    } else {
+      const res = extractText(joined, source);
+      out.records.push(...res.records); out.suspicious.push(...res.suspicious);
+    }
+  }
+  return out;
+}
+
+/* ---------------- validation ---------------- */
+function validate(records){
+  const flags = [], conflicts = [], missing = [];
+  // duplicates: same category + normalized value
+  const seen = new Map();
+  for(const r of records){
+    const key = r.category + "|" + r.quote.toLowerCase().replace(/\s+/g," ").trim();
+    if(seen.has(key)) flags.push({id:r.id, reason:"Possible duplicate of "+seen.get(key)});
+    else seen.set(key, r.id);
+  }
+  // conflicts: same identified item (e.g. same unit) with different amounts —
+  // generic category labels are skipped so unrelated items are never paired
+  const byField = new Map();
+  for(const r of records.filter(r => r.amount != null && r.field !== (CATS[r.category]||CATS.general).label)){
+    const k = (r.field+"|"+r.category).toLowerCase();
+    if(byField.has(k)){
+      const prev = byField.get(k);
+      if(prev.amount !== r.amount)
+        conflicts.push({description:`“${r.field}” has two different amounts`, versions:[
+          `${prev.id}: ${fmtMoney(prev.amount, prev.currency)} — “${prev.quote}”`,
+          `${r.id}: ${fmtMoney(r.amount, r.currency)} — “${r.quote}”`]});
+    } else byField.set(k, r);
+  }
+  for(const r of records){
+    if(r.confidence === "low") flags.push({id:r.id, reason:"Low confidence — could not clearly classify or verify this line"});
+    if(r.dateNote) flags.push({id:r.id, reason:r.dateNote});
+    if(r.category === "milestone" && !r.date) missing.push(`${r.id}: milestone has no date — “${r.quote.slice(0,80)}”`);
+    if(r.category === "cost" && r.amount == null) missing.push(`${r.id}: cost item has no amount — “${r.quote.slice(0,80)}”`);
+    if(r.category === "action_item" && !r.owner) missing.push(`${r.id}: action item has no owner`);
+    if(r.date){
+      const y = +r.date.slice(0,4);
+      if(y < 2015 || y > 2040) flags.push({id:r.id, reason:"Date "+r.date+" looks out of range — please verify"});
+    }
+    if(r.amount != null && r.amount < 0) flags.push({id:r.id, reason:"Negative amount — please verify"});
+  }
+  return {flags, conflicts, missing};
+}
+
+/* ---------------- processing pipeline ---------------- */
+function process(){
+  const text = $("#rawtext").value.trim();
+  const project = $("#project").value.trim();
+  if(!text && !state.files.length){
+    showStatus("Add some text or at least one file first.", true); return;
+  }
+  idSeq = 0;
+  const all = {records:[], suspicious:[]};
+  const sources = [];
+  if(text){
+    const res = extractText(text, "pasted text");
+    all.records.push(...res.records); all.suspicious.push(...res.suspicious);
+    sources.push("pasted text");
+  }
+  for(const f of state.files){
+    const res = /\.(csv|tsv)$/i.test(f.name) ? extractCSV(f.text, f.name) : extractText(f.text, f.name);
+    all.records.push(...res.records); all.suspicious.push(...res.suspicious);
+    sources.push(f.name);
+  }
+  state.records = all.records;
+  const v = validate(all.records);
+  state.meta = {...v, suspicious: all.suspicious, project, sources, processedAt: new Date()};
+  // auto-flag records referenced in flags
+  const flaggedIds = new Set(v.flags.map(f => f.id));
+  for(const r of state.records) if(flaggedIds.has(r.id) && r.status === "pending") r.status = "review";
+
+  logEvent("Processed", `${all.records.length} records from ${sources.join(", ")}${project? " · project: "+project : ""}`);
+  if(all.suspicious.length) logEvent("Quarantined", all.suspicious.length + " suspicious line(s) excluded from processing");
+  $("#results").hidden = false;
+  renderAll();
+  showStatus(`${all.records.length} records extracted · ${v.flags.length} flagged for review · ${all.suspicious.length} suspicious line(s) quarantined.`, false);
+  $("#results").scrollIntoView({behavior:"smooth"});
+}
+
+function showStatus(msg, warn){
+  const n = $("#statusNote");
+  n.hidden = false; n.textContent = msg;
+  n.className = "notice" + (warn ? " warn" : "");
+}
+
+/* ---------------- rendering: records ---------------- */
+function maskVal(v){ if(!v) return v; const s=String(v); return s.slice(0,2) + "•".repeat(Math.min(8, Math.max(3, s.length-2))); }
+
+function renderRecords(){
+  const tbody = $("#recTable tbody");
+  const catF = $("#catFilter").value, confF = $("#confFilter").value;
+  const reveal = $("#revealSens").checked;
+  const rows = state.records.filter(r => (!catF || r.category===catF) && (!confF || r.confidence===confF));
+  $("#recCount").textContent = state.records.length;
+  if(!rows.length){ tbody.innerHTML = `<tr><td colspan="9" class="empty">No records match the current filters.</td></tr>`; return; }
+  tbody.innerHTML = rows.map(r => {
+    const cs = CATS[r.category] || CATS.general;
+    const val = r.sensitive && !reveal ? `<span class="masked">${esc(maskVal(r.value))}</span><span class="sens-tag">sensitive</span>` : esc(r.value);
+    const extra = [r.client?`Client: ${r.sensitive&&!reveal?esc(maskVal(r.client)):esc(r.client)}`:null,
+                   r.email?`✉ ${reveal?esc(r.email):esc(maskVal(r.email))}`:null,
+                   r.phone?`☎ ${reveal?esc(r.phone):esc(maskVal(r.phone))}`:null].filter(Boolean).join(" · ");
+    return `<tr data-id="${r.id}">
+      <td><span class="cat"><span class="sw" style="background:${slotColor(cs.slot)}"></span>${esc(cs.label)}</span>
+          ${r.tags.length?`<div class="basis">${esc(r.tags.map(t=>"+"+t.replace("_"," ")).join(" "))}</div>`:""}</td>
+      <td>${esc(r.field)}<span class="quote">“${esc(r.quote.length>110?r.quote.slice(0,107)+"…":r.quote)}” <em>(${esc(r.source)})</em></span></td>
+      <td>${val}${extra?`<div class="basis">${extra}</div>`:""}</td>
+      <td class="num">${r.amount!=null ? esc(fmtMoney(r.amount, r.currency)) : "—"}</td>
+      <td>${r.date ? esc(r.date) : (r.dateDisplay ? esc(r.dateDisplay)+" <span class='basis'>(incomplete)</span>" : "—")}</td>
+      <td>${esc(r.owner || "—")}</td>
+      <td><span class="conf ${r.confidence}">${r.confidence}</span><div class="basis">${r.basis}</div></td>
+      <td><span class="status ${r.status}">${r.status === "pending" ? "unreviewed" : r.status === "review" ? "needs review" : r.status}</span></td>
+      <td><div class="rowbtns">
+        <button data-act="approve" title="Approve">✓</button>
+        <button data-act="edit" title="Edit">✎</button>
+        <button data-act="reject" title="Reject">✕</button>
+      </div></td>
+    </tr>`;
+  }).join("");
+}
+
+$("#recTable").addEventListener("click", e => {
+  const btn = e.target.closest("button[data-act]"); if(!btn) return;
+  const id = btn.closest("tr").dataset.id;
+  const r = state.records.find(x => x.id === id); if(!r) return;
+  const act = btn.dataset.act;
+  if(act === "approve"){ r.status = "approved"; logEvent("Approved", id + " — " + r.field); renderAll(); }
+  else if(act === "reject"){ r.status = "rejected"; logEvent("Rejected", id + " — " + r.field); renderAll(); }
+  else if(act === "edit") openEdit(r);
+});
+
+$("#approveHigh").addEventListener("click", () => {
+  let n = 0;
+  for(const r of state.records) if(r.confidence === "high" && (r.status === "pending")) { r.status = "approved"; n++; }
+  logEvent("Bulk approve", n + " high-confidence records approved");
+  renderAll();
+});
+
+/* edit dialog */
+let editing = null;
+function openEdit(r){
+  editing = r;
+  $("#e_field").value = r.field; $("#e_value").value = r.quote;
+  $("#e_cat").innerHTML = Object.entries(CATS).map(([k,v]) => `<option value="${k}" ${k===r.category?"selected":""}>${esc(v.label)}</option>`).join("");
+  $("#e_amount").value = r.amount ?? ""; $("#e_date").value = r.date ?? ""; $("#e_owner").value = r.owner ?? "";
+  $("#editDlg").showModal();
+}
+$("#editForm").addEventListener("submit", e => {
+  if(e.submitter && e.submitter.value === "save" && editing){
+    const before = `${editing.field} | ${editing.amount ?? "—"} | ${editing.date ?? "—"}`;
+    editing.field = $("#e_field").value.trim() || editing.field;
+    editing.value = $("#e_value").value.trim() || editing.value;
+    editing.quote = $("#e_value").value.trim() || editing.quote;
+    editing.category = $("#e_cat").value;
+    const amt = $("#e_amount").value.trim();
+    editing.amount = amt === "" ? null : (isFinite(parseFloat(amt.replace(/,/g,""))) ? parseFloat(amt.replace(/,/g,"")) : editing.amount);
+    if(editing.amount != null && !editing.currency) editing.currency = "AED";
+    const dt = $("#e_date").value.trim();
+    editing.date = dt === "" ? null : (/^\d{4}-\d{2}-\d{2}$/.test(dt) ? dt : editing.date);
+    editing.owner = $("#e_owner").value.trim() || null;
+    editing.status = "approved"; editing.confidence = "high"; editing.basis = "stated";
+    logEvent("Edited", `${editing.id} — was [${before}], now [${editing.field} | ${editing.amount ?? "—"} | ${editing.date ?? "—"}] (auto-approved after manual edit)`);
+    editing = null; renderAll();
+  }
+});
+
+["catFilter","confFilter","revealSens"].forEach(id => $("#"+id).addEventListener("change", () => {
+  if(id === "revealSens" && $("#revealSens").checked) logEvent("Sensitive revealed", "Masked details shown on screen");
+  renderRecords();
+}));
+
+/* ---------------- charts (SVG, on-brand, accessible) ---------------- */
+const tip = $("#tooltip");
+document.addEventListener("mousemove", e => {
+  const t = e.target.closest("[data-tip]");
+  if(t){ tip.textContent = t.dataset.tip; tip.style.opacity = 1;
+    tip.style.left = Math.min(e.clientX + 14, innerWidth - 270) + "px"; tip.style.top = (e.clientY + 14) + "px";
+  } else tip.style.opacity = 0;
+});
+
+function dataTable(rows, cols){
+  return `<details class="dtable"><summary>View data table</summary><table>
+    <thead><tr>${cols.map(c=>`<th>${esc(c)}</th>`).join("")}</tr></thead>
+    <tbody>${rows.map(r=>`<tr>${r.map(c=>`<td>${esc(c)}</td>`).join("")}</tr>`).join("")}</tbody></table></details>`;
+}
+
+function barChart(items, {unit=""}={}){
+  // horizontal bars, single hue (brand copper) + direct labels (relief rule)
+  const max = Math.max(...items.map(i => i.value), 1);
+  const rowH = 34, labelW = 150, chartW = 640, barMax = chartW - labelW - 120;
+  const h = items.length * rowH + 10;
+  let svg = `<svg viewBox="0 0 ${chartW} ${h}" width="100%" role="img" aria-label="Bar chart">`;
+  items.forEach((it, i) => {
+    const y = i * rowH + 6, w = Math.max(2, (it.value / max) * barMax);
+    svg += `<text x="${labelW-10}" y="${y+15}" text-anchor="end" font-size="12.5" fill="var(--ink-2)">${esc(it.label.length>20?it.label.slice(0,19)+"…":it.label)}</text>
+      <line x1="${labelW}" y1="${y+21.5}" x2="${labelW+barMax}" y2="${y+21.5}" stroke="var(--grid)" stroke-width="1"/>
+      <path d="M${labelW},${y+3} h${Math.max(0,w-4)} a4,4 0 0 1 4,4 v4 a4,4 0 0 1 -4,4 h-${Math.max(0,w-4)} z"
+        fill="var(--copper)" data-tip="${esc(it.label)}: ${esc(it.display)}"/>
+      <text x="${labelW + w + 8}" y="${y+15}" font-size="12.5" fill="var(--ink)" class="num">${esc(it.display)}</text>`;
+  });
+  svg += `</svg>`;
+  return svg + (unit ? `<div class="csub" style="margin-top:6px">${esc(unit)}</div>` : "");
+}
+
+function donutChart(items){
+  const total = items.reduce((s,i)=>s+i.value,0) || 1;
+  const cx=90, cy=90, R=72, r=42;
+  let a0 = -Math.PI/2, paths = "";
+  items.forEach(it => {
+    const frac = it.value/total, a1 = a0 + frac * 2*Math.PI;
+    const large = (a1-a0) > Math.PI ? 1 : 0;
+    const p = (a,rad)=>[cx+rad*Math.cos(a), cy+rad*Math.sin(a)];
+    const [x0,y0]=p(a0,R),[x1,y1]=p(a1,R),[x2,y2]=p(a1,r),[x3,y3]=p(a0,r);
+    paths += `<path d="M${x0},${y0} A${R},${R} 0 ${large} 1 ${x1},${y1} L${x2},${y2} A${r},${r} 0 ${large} 0 ${x3},${y3} Z"
+      fill="${slotColor(it.slot)}" stroke="var(--surface)" stroke-width="2"
+      data-tip="${esc(it.label)}: ${it.value} (${Math.round(frac*100)}%)"/>`;
+    a0 = a1;
+  });
+  const svg = `<div style="display:flex;gap:18px;align-items:center;flex-wrap:wrap">
+    <svg viewBox="0 0 180 180" width="180" role="img" aria-label="Breakdown donut chart">${paths}
+      <text x="${cx}" y="${cy+1}" text-anchor="middle" font-size="26" fill="var(--ink)">${total}</text>
+      <text x="${cx}" y="${cy+19}" text-anchor="middle" font-size="10" fill="var(--ink-3)" letter-spacing="1">RECORDS</text>
+    </svg>
+    <div class="legend" style="flex-direction:column;align-items:flex-start;gap:7px">
+      ${items.map(it=>`<span><span class="sw" style="background:${slotColor(it.slot)}"></span>${esc(it.label)} — <b class="num">${it.value}</b></span>`).join("")}
+    </div></div>`;
+  return svg;
+}
+
+function timelineChart(items){
+  // items: {date: ISO, label, cat}
+  const sorted = [...items].sort((a,b)=>a.date.localeCompare(b.date)).slice(0,14);
+  const t0 = new Date(sorted[0].date).getTime(), t1 = new Date(sorted[sorted.length-1].date).getTime();
+  const W=760, H=220, mid=110, pad=60, span = Math.max(t1-t0, 1);
+  const x = d => pad + ((new Date(d).getTime()-t0)/span)*(W-2*pad);
+  let svg = `<svg viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="Timeline of dated items">
+    <line x1="${pad-20}" y1="${mid}" x2="${W-pad+20}" y2="${mid}" stroke="var(--baseline)" stroke-width="1.5"/>`;
+  // two label lanes per side so clustered dates never collide
+  const lastX = {top:[-1e9,-1e9], bot:[-1e9,-1e9]}, MIN_GAP = 100;
+  sorted.forEach((it,i)=>{
+    const cs = CATS[it.cat] || CATS.general;
+    const px = x(it.date);
+    let side = i%2===0 ? "top" : "bot";
+    if(px - lastX[side][0] < MIN_GAP && px - lastX[side][1] < MIN_GAP &&
+       (px - lastX[side==="top"?"bot":"top"][0] >= MIN_GAP || px - lastX[side==="top"?"bot":"top"][1] >= MIN_GAP))
+      side = side === "top" ? "bot" : "top";
+    const tier = px - lastX[side][0] < MIN_GAP ? 1 : 0;
+    lastX[side][tier] = px;
+    const ty = side==="top" ? (tier ? mid-56 : mid-28) : (tier ? mid+62 : mid+34);
+    const ly = side==="top" ? ty+13 : ty-22;
+    svg += `<line x1="${px}" y1="${mid}" x2="${px}" y2="${ly}" stroke="var(--grid)" stroke-width="1"/>
+      <circle cx="${px}" cy="${mid}" r="6" fill="${slotColor(cs.slot)}" stroke="var(--surface)" stroke-width="2"
+        data-tip="${esc(it.date)} — ${esc(it.label)}"/>
+      <text x="${px}" y="${ty}" text-anchor="middle" font-size="10.5" fill="var(--ink-2)">${esc(it.label.length>16?it.label.slice(0,15)+"…":it.label)}</text>
+      <text x="${px}" y="${ty+11}" text-anchor="middle" font-size="9.5" fill="var(--ink-3)" class="num">${esc(it.date.slice(5))}</text>`;
+  });
+  svg += `</svg>
+  <div class="legend">${[...new Set(sorted.map(s=>s.cat))].map(c=>`<span><span class="sw" style="background:${slotColor((CATS[c]||CATS.general).slot)}"></span>${esc((CATS[c]||CATS.general).label)}</span>`).join("")}</div>`;
+  return svg;
+}
+
+function renderCharts(){
+  const recs = state.records.filter(r => r.status !== "rejected");
+  const money = recs.filter(r => r.amount != null && r.currency !== "USD" || r.amount != null && r.currency === "AED");
+  const aed = recs.filter(r => r.amount != null && (r.currency === "AED" || !r.currency));
+  const totalAED = aed.reduce((s,r)=>s+r.amount,0);
+  const dated = recs.filter(r => r.date);
+  const nextDated = [...dated].sort((a,b)=>a.date.localeCompare(b.date)).find(r => r.date >= new Date().toISOString().slice(0,10));
+  const needsReview = state.records.filter(r=>r.status==="review").length;
+
+  $("#tiles").innerHTML = `
+    <div class="tile"><div class="t-label">Records</div><div class="t-value num">${recs.length}</div><div class="t-sub">${state.meta.sources.length} source${state.meta.sources.length>1?"s":""}</div></div>
+    <div class="tile"><div class="t-label">Value identified</div><div class="t-value num">${totalAED ? fmtMoney(totalAED) : "—"}</div><div class="t-sub">${aed.length} priced item${aed.length===1?"":"s"} (AED)</div></div>
+    <div class="tile"><div class="t-label">Action items</div><div class="t-value num">${recs.filter(r=>r.category==="action_item").length}</div><div class="t-sub">${recs.filter(r=>r.category==="action_item"&&r.owner).length} with an owner</div></div>
+    <div class="tile"><div class="t-label">Risks / issues</div><div class="t-value num" style="color:${recs.some(r=>r.category==="risk")?"var(--critical)":"var(--good-text)"}">${recs.filter(r=>r.category==="risk").length}</div><div class="t-sub">flagged in source data</div></div>
+    <div class="tile"><div class="t-label">Needs review</div><div class="t-value num" style="color:${needsReview?"#7a5200":"var(--good-text)"}">${needsReview}</div><div class="t-sub">low confidence or flagged</div></div>`;
+
+  const grid = $("#chartGrid");
+  let html = "";
+
+  // pie: records by category
+  const byCat = Object.keys(CATS).map(k => ({label:CATS[k].label, slot:CATS[k].slot, value:recs.filter(r=>r.category===k).length})).filter(x=>x.value>0)
+    .sort((a,b)=>b.value-a.value);
+  html += `<div class="chartcard"><h3>Records by category</h3><div class="csub">Every record, sorted into its primary category</div>`;
+  html += byCat.length ? donutChart(byCat) + dataTable(byCat.map(c=>[c.label,c.value]),["Category","Records"])
+                       : `<div class="placeholder">No records to chart yet</div>`;
+  html += `</div>`;
+
+  // bar: monetary value by category
+  const moneyCats = Object.keys(CATS).map(k => {
+    const rs = aed.filter(r=>r.category===k); const v = rs.reduce((s,r)=>s+r.amount,0);
+    return {label:CATS[k].label, value:v, display:fmtMoney(v)};
+  }).filter(x=>x.value>0).sort((a,b)=>b.value-a.value);
+  html += `<div class="chartcard"><h3>Value by category</h3><div class="csub">Sum of amounts found in the source data (AED)</div>`;
+  html += moneyCats.length ? barChart(moneyCats) + dataTable(moneyCats.map(c=>[c.label,c.display]),["Category","Total"])
+                           : `<div class="placeholder">No amounts found in the data — nothing is estimated or invented</div>`;
+  html += `</div>`;
+
+  // bar: top priced items
+  const top = [...aed].sort((a,b)=>b.amount-a.amount).slice(0,7)
+    .map(r=>({label:r.field, value:r.amount, display:fmtMoney(r.amount,r.currency)}));
+  html += `<div class="chartcard"><h3>Largest amounts</h3><div class="csub">Top priced items across all sources</div>`;
+  html += top.length ? barChart(top) + dataTable(top.map(t=>[t.label,t.display]),["Item","Amount"])
+                     : `<div class="placeholder">No amounts found</div>`;
+  html += `</div>`;
+
+  // confidence mix
+  const confs = ["high","medium","low"].map((c,i)=>({label:c[0].toUpperCase()+c.slice(1)+" confidence", slot:[4,3,6][i], value:recs.filter(r=>r.confidence===c).length})).filter(x=>x.value>0);
+  html += `<div class="chartcard"><h3>Extraction confidence</h3><div class="csub">How certain the engine is about each record</div>`;
+  html += confs.length ? donutChart(confs) + dataTable(confs.map(c=>[c.label,c.value]),["Confidence","Records"])
+                       : `<div class="placeholder">No records</div>`;
+  html += `</div>`;
+
+  // timeline
+  const tl = dated.map(r=>({date:r.date, label:r.field, cat:r.category}));
+  html += `<div class="chartcard wide"><h3>Timeline</h3><div class="csub">Dated items in chronological order${nextDated?` · next up: <b>${esc(nextDated.field)}</b> on ${esc(nextDated.date)}`:""}</div>`;
+  html += tl.length >= 2 ? timelineChart(tl) + dataTable([...tl].sort((a,b)=>a.date.localeCompare(b.date)).map(t=>[t.date,t.label,(CATS[t.cat]||CATS.general).label]),["Date","Item","Category"])
+        : tl.length === 1 ? `<div class="placeholder">Only one dated item: <b>${esc(tl[0].label)}</b> on ${esc(tl[0].date)}</div>`
+        : `<div class="placeholder">No dated items found — dates are only shown when stated in the source</div>`;
+  html += `</div>`;
+
+  grid.innerHTML = html;
+}
+
+/* ---------------- executive summary ---------------- */
+function buildExecText(){
+  const recs = state.records.filter(r=>r.status!=="rejected");
+  const aed = recs.filter(r=>r.amount!=null && (r.currency==="AED"||!r.currency));
+  const totalAED = aed.reduce((s,r)=>s+r.amount,0);
+  const risks = recs.filter(r=>r.category==="risk");
+  const actions = recs.filter(r=>r.category==="action_item");
+  const deps = recs.filter(r=>r.category==="dependency");
+  const dated = recs.filter(r=>r.date).sort((a,b)=>a.date.localeCompare(b.date));
+  const today = new Date().toISOString().slice(0,10);
+  const upcoming = dated.filter(r=>r.date>=today).slice(0,3);
+  const needsReview = state.records.filter(r=>r.status==="review").length;
+  const m = state.meta;
+
+  const L = [];
+  L.push(`${m.project ? m.project + " — " : ""}operational digest, ${new Date().toLocaleDateString("en-GB",{day:"numeric",month:"long",year:"numeric"})}.`);
+  L.push(`${recs.length} records were extracted from ${m.sources.length} source${m.sources.length>1?"s":""} (${m.sources.join(", ")}). ${totalAED?`Monetary values identified total ${fmtMoney(totalAED)} across ${aed.length} item${aed.length===1?"":"s"}.`:"No monetary values were stated in the source data."}`);
+  const bullets = [];
+  if(upcoming.length) bullets.push(`Next dated items: ${upcoming.map(r=>`${r.field} (${r.date})`).join("; ")}.`);
+  if(actions.length) bullets.push(`${actions.length} open action item${actions.length===1?"":"s"}${actions.filter(a=>a.owner).length?`, ${actions.filter(a=>a.owner).length} with a named owner`:""}.`);
+  if(risks.length) bullets.push(`${risks.length} risk${risks.length===1?"":"s"} flagged: ${risks.slice(0,3).map(r=>`“${r.quote.slice(0,70)}${r.quote.length>70?"…":""}”`).join(" · ")}`);
+  if(deps.length) bullets.push(`${deps.length} dependenc${deps.length===1?"y":"ies"} waiting on third parties.`);
+  if(m.conflicts.length) bullets.push(`${m.conflicts.length} data conflict${m.conflicts.length===1?"":"s"} preserved for resolution (both versions kept — see Audit).`);
+  if(needsReview) bullets.push(`${needsReview} record${needsReview===1?"":"s"} need${needsReview===1?"s":""} human review before export.`);
+  return {lede:L[0], body:L[1], bullets};
+}
+
+function renderExec(){
+  const e = buildExecText();
+  $("#execBody").innerHTML = `<p class="lede">${esc(e.lede)}</p><p>${esc(e.body)}</p>
+    ${e.bullets.length?`<ul>${e.bullets.map(b=>`<li>${esc(b)}</li>`).join("")}</ul>`:""}
+    <p style="color:var(--ink-3);font-size:13px">Every figure above is computed directly from extracted records — nothing is estimated. Items marked “needs review” are excluded from nothing but should be verified.</p>`;
+}
+$("#copyExec").addEventListener("click", async () => {
+  const e = buildExecText();
+  const txt = [e.lede, "", e.body, "", ...e.bullets.map(b=>"• "+b)].join("\n");
+  try{ await navigator.clipboard.writeText(txt); logEvent("Copied", "Executive summary copied to clipboard"); showStatus("Executive summary copied.", false);}catch{ showStatus("Copy failed — select and copy manually.", true); }
+});
+
+/* ---------------- audit ---------------- */
+function renderAudit(){
+  const m = state.meta;
+  const flagged = m.flags.length + m.conflicts.length + m.suspicious.length;
+  $("#flagCount").textContent = flagged;
+  let html = "";
+  if(m.suspicious.length){
+    html += `<div class="notice warn" style="margin:0 0 16px"><b>${m.suspicious.length} suspicious line(s) quarantined.</b> These looked like attempts to instruct an automated system (or contained embedded code) and were excluded from processing. Review them manually:
+      <ul class="flaglist" style="margin-top:8px">${m.suspicious.map(s=>`<li>“${esc(s.quote.slice(0,140))}” <span class="why">(${esc(s.source)})</span></li>`).join("")}</ul></div>`;
+  }
+  html += `<h3 class="serif">Review flags (${m.flags.length})</h3>`;
+  html += m.flags.length ? `<ul class="flaglist">${m.flags.map(f=>`<li><b>${esc(f.id)}</b> — ${esc(f.reason)}</li>`).join("")}</ul>` : `<p style="color:var(--ink-3)">None — all records extracted cleanly.</p>`;
+  html += `<h3 class="serif">Conflicts (${m.conflicts.length})</h3>`;
+  html += m.conflicts.length ? `<ul class="flaglist">${m.conflicts.map(c=>`<li>${esc(c.description)}<div class="why">${c.versions.map(esc).join("<br>")}</div><div class="why" style="color:var(--copper-deep)">Both versions preserved — choose the correct one via Edit.</div></li>`).join("")}` : `<p style="color:var(--ink-3)">No conflicting values detected.</p>`;
+  html += `<h3 class="serif">Missing / incomplete (${m.missing.length})</h3>`;
+  html += m.missing.length ? `<ul class="flaglist">${m.missing.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>` : `<p style="color:var(--ink-3)">No obvious gaps detected.</p>`;
+  $("#auditBody").innerHTML = html;
+}
+
+function renderLog(){
+  const tb = $("#logTable tbody"); if(!tb) return;
+  tb.innerHTML = state.log.map(l => `<tr><td>${l.t.toLocaleTimeString("en-GB")}</td><td>${esc(l.event)}</td><td>${esc(l.detail)}</td></tr>`).join("");
+}
+
+$("#exportLog").addEventListener("click", () => {
+  const rows = [["time","event","detail"], ...state.log.map(l=>[l.t.toISOString(), l.event, l.detail])];
+  download("bloomingbird-audit-log.csv", toCSV(rows), "text/csv");
+  logEvent("Exported", "Audit log CSV");
+});
+
+/* ---------------- export ---------------- */
+function toCSV(rows){
+  return "﻿" + rows.map(r => r.map(c => {
+    const s = String(c ?? "");
+    return /[",\n]/.test(s) ? '"' + s.replace(/"/g,'""') + '"' : s;
+  }).join(",")).join("\r\n");
+}
+function download(name, content, mime){
+  const blob = new Blob([content], {type:mime});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob); a.download = name;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=>URL.revokeObjectURL(a.href), 5000);
+}
+function exportRecords(kind){
+  const onlyApproved = $("#exportApprovedOnly").checked;
+  const recs = state.records.filter(r => onlyApproved ? r.status === "approved" : r.status !== "rejected");
+  if(!recs.length){ showStatus(onlyApproved ? "Nothing approved yet — approve records first, or untick “approved only”." : "Nothing to export.", true); return; }
+  const unreviewed = onlyApproved ? 0 : recs.filter(r=>r.status!=="approved").length;
+  const msg = `Export ${recs.length} record${recs.length===1?"":"s"} as ${kind.toUpperCase()}?` +
+    (unreviewed ? `\n\nNote: ${unreviewed} of them are not yet approved.` : "") +
+    `\n\nThe file is saved to this device only.`;
+  if(!confirm(msg)) { logEvent("Export cancelled", kind.toUpperCase()); return; }
+  const stamp = new Date().toISOString().slice(0,10);
+  if(kind === "csv"){
+    const rows = [["id","category","item","value","amount","currency","date","owner","client","email","phone","confidence","basis","status","tags","source_quote","source"]];
+    for(const r of recs) rows.push([r.id, r.category, r.field, r.value, r.amount ?? "", r.currency ?? "", r.date ?? "", r.owner ?? "", r.client ?? "", r.email ?? "", r.phone ?? "", r.confidence, r.basis, r.status, r.tags.join("; "), r.quote, r.source]);
+    download(`bloomingbird-records-${stamp}.csv`, toCSV(rows), "text/csv");
+  } else {
+    const payload = {exported_at:new Date().toISOString(), project: state.meta.project || null, sources: state.meta.sources,
+      records: recs, flags: state.meta.flags, conflicts: state.meta.conflicts, missing: state.meta.missing};
+    download(`bloomingbird-records-${stamp}.json`, JSON.stringify(payload, null, 2), "application/json");
+  }
+  logEvent("Exported", `${recs.length} records as ${kind.toUpperCase()} (${onlyApproved?"approved only":"all non-rejected"})`);
+}
+$("#exportCsv").addEventListener("click", ()=>exportRecords("csv"));
+$("#exportJson").addEventListener("click", ()=>exportRecords("json"));
+
+/* ---------------- files ---------------- */
+const ACCEPT_RX = /\.(csv|tsv|txt|md|eml|json|log)$/i;
+function addFiles(list){
+  for(const f of list){
+    if(!ACCEPT_RX.test(f.name)){ showStatus(`“${f.name}” isn’t a supported type. PDFs and Excel files: export as CSV or paste the text.`, true); continue; }
+    if(f.size > 8*1024*1024){ showStatus(`“${f.name}” is over 8 MB — split it or trim it first.`, true); continue; }
+    const reader = new FileReader();
+    reader.onload = () => {
+      state.files.push({name:f.name, text:String(reader.result)});
+      logEvent("File added", `${f.name} (${(f.size/1024).toFixed(1)} KB) — read locally`);
+      renderChips();
+    };
+    reader.readAsText(f);
+  }
+}
+function renderChips(){
+  $("#filechips").innerHTML = state.files.map((f,i)=>`<span class="chip">📄 ${esc(f.name)} <button aria-label="Remove ${esc(f.name)}" data-i="${i}">×</button></span>`).join("");
+}
+$("#filechips").addEventListener("click", e => {
+  const b = e.target.closest("button[data-i]"); if(!b) return;
+  const [f] = state.files.splice(+b.dataset.i, 1);
+  logEvent("File removed", f.name); renderChips();
+});
+const drop = $("#drop");
+drop.addEventListener("click", ()=>$("#fileinput").click());
+drop.addEventListener("keydown", e=>{ if(e.key==="Enter"||e.key===" "){e.preventDefault();$("#fileinput").click();} });
+$("#fileinput").addEventListener("change", e => { addFiles(e.target.files); e.target.value=""; });
+["dragover","dragenter"].forEach(ev=>drop.addEventListener(ev, e=>{e.preventDefault();drop.classList.add("on");}));
+["dragleave","drop"].forEach(ev=>drop.addEventListener(ev, e=>{e.preventDefault();drop.classList.remove("on");}));
+drop.addEventListener("drop", e => addFiles(e.dataTransfer.files));
+
+/* ---------------- tabs ---------------- */
+$$(".tab").forEach(t => t.addEventListener("click", () => {
+  $$(".tab").forEach(x => x.setAttribute("aria-selected", x===t));
+  $$(".panel").forEach(p => p.classList.toggle("on", p.id === t.dataset.panel));
+}));
+
+/* ---------------- top-level actions ---------------- */
+$("#processBtn").addEventListener("click", process);
+$("#clearBtn").addEventListener("click", () => {
+  if(!confirm("Clear all input, records and the activity log?")) return;
+  state.files = []; state.records = []; state.meta = null; state.log = [];
+  $("#rawtext").value = ""; $("#project").value = "";
+  renderChips(); $("#results").hidden = true; $("#statusNote").hidden = true; renderLog();
+});
+
+const SAMPLE = `Project update — Marina Vista Tower 2 (12 July 2026)
+Client Sarah Al Mansoori confirmed EOI for unit 1204, booking fee AED 50,000 paid.
+SPA signing scheduled 24 July 2026 — assigned to Omar.
+Payment plan agreed: 20% down payment, 40% during construction, 40% on handover.
+Handover milestone expected Q4 2027.
+Risk: DLD registration pending — escrow account approval still awaited from the developer.
+Follow up with the developer sales office re: parking allocation — call +971 50 425 6348.
+Commission invoice AED 85,500 to be issued after SPA signing.
+Approved: marketing budget AED 12,000 for the July campaign.
+Viewing arranged for 15 July 2026, 10:30 at the Palm Jumeirah villa — client James Whitfield (james.w@example.com).
+Waiting on NOC from the developer before the transfer can proceed.
+Deposit for unit 1204 also recorded as AED 55,000 in the finance sheet — needs checking.
+Nice weather today.`;
+
+$("#sampleBtn").addEventListener("click", () => {
+  $("#rawtext").value = SAMPLE;
+  $("#project").value = "Marina Vista Tower 2";
+  logEvent("Sample loaded", "Demonstration data (fictional)");
+  process();
+});
+
+/* populate category filter */
+$("#catFilter").innerHTML = `<option value="">All categories</option>` + Object.entries(CATS).map(([k,v])=>`<option value="${k}">${esc(v.label)}</option>`).join("");
+
+function renderAll(){ renderRecords(); renderCharts(); renderExec(); renderAudit(); renderLog(); }
+</script>
+</body>
+</html>
